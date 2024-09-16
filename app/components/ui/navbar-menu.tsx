@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import {
-  motion,
-} from "framer-motion";import Link from "next/link";
+import { motion } from "framer-motion";
+import Link, { LinkProps } from "next/link";
 import Image from "next/image";
 import { useTranslation } from 'next-i18next';
 
@@ -171,9 +170,10 @@ export const ProductItem = ({
   );
 };
 
-export const HoveredLink = ({ children, ...rest }: any) => {
+export const HoveredLink = ({ children, href, ...rest }: LinkProps & React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }) => {
   return (
     <Link
+      href={href}
       {...rest}
       className="text-neutral-700 dark:text-neutral-200 hover:text-black "
     >

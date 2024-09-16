@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { LoginWithNostr } from '../components/LoginWithNostr';
-import NDK, { NDKUser, NDKFilter } from "@nostr-dev-kit/ndk";
+import NDK, { NDKFilter } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools';
 import Image from 'next/image';
 
@@ -18,7 +17,6 @@ interface UserProfile {
 const ProfilePage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
