@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginWithNostr } from '../components/LoginWithNostr';
-import NDK, { NDKEvent, NDKUser, NDKFilter } from "@nostr-dev-kit/ndk";
+import NDK, { NDKUser, NDKFilter } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools';
 import Image from 'next/image';
 
@@ -42,7 +42,6 @@ const ProfilePage = () => {
         await ndk.connect();
 
         const hexPubkey = nip19.decode(npub).data as string;
-        const user = new NDKUser({ pubkey: hexPubkey });
 
         const filter: NDKFilter = { kinds: [0], authors: [hexPubkey] };
         const events = await ndk.fetchEvents(filter);
@@ -139,17 +138,6 @@ const ProfilePage = () => {
                 )}
               </div>
             </div>
-          </div>
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => {
-                localStorage.removeItem("nostrPublicKey");
-                router.push("/");
-              }}
-              className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
-            >
-              Logout
-            </button>
           </div>
         </div>
       )}

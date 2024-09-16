@@ -59,7 +59,6 @@ export function LoginWithNostr() {
         containerClassName="rounded-full"
         as="button"
         onClick={isLoggedIn ? handleLogout : handleLogin}
-        disabled={isLoading}
         className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-1 sm:space-x-2 
                    px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-5 lg:py-3
                    text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"

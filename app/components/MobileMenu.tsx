@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { HoverBorderGradientDemo } from "./LoginWithNostr";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
-import { IconBusinessplan, IconPhone, IconSpray, IconTie } from "@tabler/icons-react";
+import { IconPhone, IconSpray, IconTie } from "@tabler/icons-react";
 
 interface MobileMenuProps {
   isOpen: boolean;

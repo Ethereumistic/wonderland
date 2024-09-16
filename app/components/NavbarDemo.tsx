@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { HoveredLink, LogoImage,  Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./themeSwitch";
-import Image from "next/image";
 import { LoginWithNostr } from "./LoginWithNostr";
 import Link from "next/link";
 import { FlipWordsNav } from "./FlipWords";
@@ -54,16 +53,10 @@ export function NavbarDemo({ className }: { className?: string }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setMobileMenuOpen(false);
-    }
-  };
-
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
-      let direction = current! - scrollYProgress.getPrevious()!;
+      const direction = current! - scrollYProgress.getPrevious()!;
 
       if (scrollYProgress.get() < 0.05) {
         setVisible(true);
@@ -76,7 +69,7 @@ export function NavbarDemo({ className }: { className?: string }) {
       }
     }
   });
-
+  
   return (
     <div className="relative w-full flex items-center justify-center">
       <AnimatePresence mode="wait">

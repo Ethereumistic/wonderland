@@ -3,9 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 import { NavbarDemo } from "./components/NavbarDemo";
-import { dir } from 'i18next'
 import { languages } from '../i18n/settings'
-import { FloatingNavDemo } from "./components/FloatingNav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
