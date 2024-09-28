@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { HoveredLink, LogoImage,  Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./themeSwitch";
-import { LoginWithNostr } from "./LoginWithNostr";
 import Link from "next/link";
 import { FlipWordsNav } from "./FlipWords";
 import MobileMenu from "./MobileMenu";
@@ -17,10 +16,8 @@ import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import { IconContract, IconSpray, IconTie, IconMenu, IconX } from "@tabler/icons-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { useTranslation } from 'next-i18next';
-import { useAuthStore } from '@/store/authStore';
 
 export function NavbarDemo({ className }: { className?: string }) {
-  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
 
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
@@ -29,19 +26,7 @@ export function NavbarDemo({ className }: { className?: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const npub = localStorage.getItem("nostrPublicKey");
-      useAuthStore.setState({ isLoggedIn: !!npub });
-    };
 
-    checkLoginStatus();
-    window.addEventListener("storage", checkLoginStatus);
-
-    return () => {
-      window.removeEventListener("storage", checkLoginStatus);
-    };
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -95,7 +80,6 @@ export function NavbarDemo({ className }: { className?: string }) {
             isMobile={isMobile} 
             mobileMenuOpen={mobileMenuOpen}
             setMobileMenuOpen={setMobileMenuOpen} 
-            isLoggedIn={isLoggedIn}
           />
         </motion.div>
       </AnimatePresence>
@@ -114,14 +98,11 @@ function Navbar({
   isMobile, 
   mobileMenuOpen,
   setMobileMenuOpen,
-  isLoggedIn
 }: { 
   className?: string, 
   isMobile: boolean, 
   mobileMenuOpen: boolean,
   setMobileMenuOpen: (isOpen: boolean) => void 
-  isLoggedIn: boolean
-
 }) {  
   const [active, setActive] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -232,21 +213,6 @@ function Navbar({
                 </div>
                 </Link>
 
-                {isLoggedIn && (
-                  <Link href="/profile" className="text-lg">
-                    <HoverBorderGradient
-                      containerClassName="rounded-full"
-                      as="button"
-                      className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-1 sm:space-x-2 
-                                 px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-5 lg:py-3
-                                 text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"
-                    >
-                      Profile
-                    </HoverBorderGradient>
-                  </Link>
-                )}
-
-                <LoginWithNostr />
                 <ThemeSwitch />
                 <LanguageSelector />
               </div>
