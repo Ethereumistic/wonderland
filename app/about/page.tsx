@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { getTeachers } from '@/lib/teacherUtils'; // Adjust the import path as necessary
 import { TeacherType } from '@/types/teacher'; // Adjust the import path as necessary
-import Image from 'next/image';
 
 const About = () => {
     const [teachers, setTeachers] = useState<TeacherType[]>([]);

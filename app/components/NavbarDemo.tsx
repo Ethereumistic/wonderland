@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { HoveredLink, Logo, LogoImage,  Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
+import { HoveredLink, Logo, Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./themeSwitch";
 import Link from "next/link";
