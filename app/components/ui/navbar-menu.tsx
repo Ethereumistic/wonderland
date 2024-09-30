@@ -79,11 +79,11 @@ export const LogoImage = ({
       <div className="relative inline-block translate-y-1">
         <Image
           src={src}
-          width={68}
-          height={68}
+          width={180}
+          height={180}
           alt={title}
-          className="dark:hidden block rounded-md hover:rotate-[360deg] transition-all duration-700
-                     w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[65px] lg:h-[65px]"
+          className="dark:hidden block rounded-md hover:rotate-[360deg] transition-all duration-700xx
+                     w-full h-full"
         />
         <Image
           src={darkSrc}
@@ -94,10 +94,49 @@ export const LogoImage = ({
                      w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[65px] lg:h-[65px]"
         />
       </div>
-      <h1 className="block text-ddblue dark:text-white font-russo -translate-y-1
-                       text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl">
-        Bio <span className="text-lgreen">DDD</span>
-      </h1>  
+
+    </Link>
+  );
+};
+export const Logo = ({
+  title,
+  href,
+  src,
+  src2,
+  src3,
+}: {
+  title: string;
+  href: string;
+  src: string;
+  src2: string;
+  src3: string;
+}) => {
+  return (
+    <Link href={href} className=" ">
+      <div className="flex justify-center items-center  group hover:scale-105 hover:rotate-[-2deg] transition-all duration-700 ease-in-out">
+        <Image
+          src={src}
+          width={40}
+          height={40}
+          alt={title}
+          className="w-full h-full translate-x-2"
+        />
+        <Image
+          src={src2}
+          width={40}
+          height={40}
+          alt={title}
+          className="w-full h-full   group-hover:rotate-[360deg] transition-all duration-700 z-10"
+        />
+        <Image
+          src={src3}
+          width={120}
+          height={120}
+          alt={title}
+          className="w-full h-full   translate-x-[6px] scale-[1.125]"
+        />
+      </div>
+
     </Link>
   );
 };
@@ -112,7 +151,7 @@ export const Menu = ({
 }) => {
   return (
     <div className="border border-transparent 
-      dark:bg-gray-800/50 dark:border-white/[0.2] bg-slate-200/50 rounded-full">
+      dark:bg-gray-800/50 dark:border-white/[0.2] bg-purple/50 rounded-full">
       <nav
         onMouseLeave={() => setActive(null)} // resets the state
         className="relative h-[90px] rounded-full 

@@ -24,6 +24,9 @@ const config: Config = {
       colors: {
         lgreen: " #5ebb46 ", 
         dgreen: " #172e08 ",
+        purple: " #82298B ",
+        cyan: " #1BA69E ",
+
         lred: " #5ebb46 ",
         lblack: " #1A1A1A ",
         ldark: " #121212 ",

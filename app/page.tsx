@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
 import i18next from './i18n'
+import { Logo } from './components/ui/navbar-menu'
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation()
