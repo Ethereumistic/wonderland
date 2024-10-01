@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       userId: result.insertedId,
       firstName: firstName,
       lastName: lastName,
-      grade: '',
+      grade: [],
       class: '',
       parentIds: [],
       createdAt: new Date(),
