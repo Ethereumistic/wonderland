@@ -4,6 +4,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { NavbarDemo } from "./components/NavbarDemo";
 import { languages } from '../i18n/settings'
+import SessionProvider from "./components/register/SessionProvider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/authOptions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +33,7 @@ export async function generateStaticParams() {
   return languages.map((lng) => ({ lng }))
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: {
     lng
@@ -41,19 +44,24 @@ export default function RootLayout({
     lng: string
   }
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang={lng} dir={isRTL(lng) ? 'rtl' : 'ltr'}>
       {/* <html> */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SessionProvider >
         <Providers>
+
           <div className="bg-white dark:bg-black">
             <NavbarDemo />
             {/* <FloatingNavDemo /> */}
             {children}
           </div>
         </Providers>
+        </SessionProvider>
       </body>
       </html>
   );

@@ -194,7 +194,7 @@ function Navbar({
                   </div>
                 </Link>
 
-                <Link href="/business" className="text-lg">
+                <Link href="/register" className="text-lg">
                 <div className="flex justify-center text-center">
                 <HoverBorderGradient
                   containerClassName="rounded-full"
@@ -203,7 +203,7 @@ function Navbar({
                              px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-5 lg:py-3
                              text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"
                 >
-                  <MenuItem setActive={setActive} active={active} item={t('Business')}>
+                  <MenuItem setActive={setActive} active={active} item={t('Register')}>
                     <div className="flex flex-col text-lg px-8 my-10">
                       <div className="flex flex-row  pb-10  justify-center hover:scale-105 transition duration-300 hover:drop-shadow-[0_1.5px_1.5px_rgba(94,187,70,1)]">
                       <IconTie width={30} height={30} className="mr-2" />
