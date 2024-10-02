@@ -8,6 +8,9 @@ import SessionProvider from "./components/register/SessionProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/authOptions";
 
+
+
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -55,7 +58,7 @@ export default async function RootLayout({
         <SessionProvider >
         <Providers>
 
-          <div className="bg-white dark:bg-black">
+          <div  className="bg-white dark:bg-black">
             <NavbarDemo />
             {/* <FloatingNavDemo /> */}
             {children}

@@ -16,8 +16,9 @@ import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import { IconContract, IconSpray, IconTie, IconMenu, IconX } from "@tabler/icons-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { useTranslation } from 'next-i18next';
+import { useSession } from 'next-auth/react'; // Import useSession
 
-export function NavbarDemo({ className }: { className?: string }) {
+export function NavbarDemo({ className }: { className?: string }) { // Removed session prop
 
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
@@ -58,7 +59,7 @@ export function NavbarDemo({ className }: { className?: string }) {
   return (
     <div className="relative w-full flex items-center justify-center">
       <AnimatePresence mode="wait">
-      <motion.div
+      {/* <motion.div
         initial={{
           opacity: 1,
           y: -100,
@@ -74,14 +75,16 @@ export function NavbarDemo({ className }: { className?: string }) {
             "flex fixed top-0 inset-x-0 mx-auto rounded-full bg-transparent z-[5000] items-center justify-center",
             className
           )}
-        >
+        > */}
+          <div className="flex fixed top-0 inset-x-0 mx-auto rounded-full bg-transparent z-[5000] items-center justify-center">
           <Navbar 
             className="top-0" 
             isMobile={isMobile} 
             mobileMenuOpen={mobileMenuOpen}
             setMobileMenuOpen={setMobileMenuOpen} 
           />
-        </motion.div>
+          </div>
+        {/* </motion.div> */}
       </AnimatePresence>
       
       {isMobile && (
@@ -106,7 +109,8 @@ function Navbar({
 }) {  
   const [active, setActive] = useState<string | null>(null);
   const { t } = useTranslation();
-  
+  const { data: session } = useSession(); // Get session data
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 ">
       <div className={cn("max-w-7xl mx-auto", className)}>
@@ -227,6 +231,22 @@ function Navbar({
                 </HoverBorderGradient>
                 </div>
                 </Link>
+
+                {session && ( // Check if session exists
+                  <HoverBorderGradient
+                  containerClassName="rounded-full"
+                  as="button"
+                  className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-1 sm:space-x-2 
+                 px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-5 lg:py-3
+                 text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"
+                >
+            <Link href={`/dashboard`} className="text-lg">
+              <button className="">
+                📑 Оценки
+              </button>
+            </Link>
+            </HoverBorderGradient>
+          )}
 
                 <ThemeSwitch />
                 <LanguageSelector />
