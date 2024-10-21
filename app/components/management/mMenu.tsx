@@ -34,12 +34,12 @@ const MMenu: React.FC = () => {
         <nav className="p-4">
             <ul className="flex space-x-4">
                 <li>
-                    <Link href="/roles" className="text-blue-600 hover:text-blue-800">
+                    <Link href="/" className="text-blue-600 hover:text-blue-800">
                         Roles
                     </Link>
                 </li>
                 <li>
-                    <Link href="/settings" className="text-blue-600 hover:text-blue-800">
+                    <Link href="/" className="text-blue-600 hover:text-blue-800">
                         Settings
                     </Link>
                 </li>

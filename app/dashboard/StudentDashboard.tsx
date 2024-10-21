@@ -9,6 +9,7 @@ export default function StudentDashboard({ session }: { session: any }) {
   useEffect(() => {
     const fetchGrades = async () => {
       try {
+        // Use the userId here
         const res = await fetch(`/api/students/${session.user.id}/grades`);
         if (!res.ok) {
           const errorData = await res.json();

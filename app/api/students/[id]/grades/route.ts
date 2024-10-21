@@ -9,28 +9,41 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  console.log('Session:', session); // Debug: Log the session
-
-  if (!session || !session.user) {
-    console.error('Unauthorized access attempt'); // Log unauthorized access
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const userId = session.user.id; // This is the userId you want to use
-  console.log('User ID:', userId); // Debug: Log the user ID
+  const { id } = params;
 
   try {
     const { db } = await connectToDatabase();
-    
-    // Find the student using userId instead of _id
-    const student = await db.collection('students').findOne({ userId: new ObjectId(userId) }); // Use userId to find the student
-    console.log('Student found:', student); // Debug: Log the student object
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    console.log('Session user:', session.user);
+    console.log('Requested ID:', id);
+
+    let queryId;
+    if (session.user.role === 'student') {
+      // Fetch the student document using the userId to get the correct _id
+      const studentDoc = await db.collection('students').findOne({ userId: session.user.id });
+      if (!studentDoc) {
+        return NextResponse.json({ error: 'Student not found' }, { status: 404 });
+      }
+      queryId = studentDoc._id.toString();
+    } else {
+      queryId = id;
+    }
+
+    console.log('Query ID:', queryId);
+
+    const student = await db.collection('students').findOne({ _id: new ObjectId(queryId) });
 
     if (!student) {
-      console.error('Student not found for userId:', userId); // Log if student is not found
+      console.log('Student not found for ID:', queryId);
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
+
+    console.log('Student found:', student);
 
     return NextResponse.json(student.grade || [], { status: 200 });
   } catch (error) {

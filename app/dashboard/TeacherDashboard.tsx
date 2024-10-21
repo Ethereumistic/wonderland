@@ -33,47 +33,29 @@ export default function TeacherDashboard({ session }: { session: any }) {
 
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      const res = await fetch('/api/students');
-      const data = await res.json();
-      setStudents(data);
-    };
-    fetchStudents();
-  }, []);
+    const fetchStudentsAndGrades = async () => {
+      try {
+        // Fetch students
+        const studentsRes = await fetch('/api/students');
+        const studentsData = await studentsRes.json();
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      const res = await fetch('/api/students');
-      const data = await res.json();
-      setStudents(data);
-    };
-
-    const fetchGrades = async () => {
-      if (session?.user?.id) {
-        const res = await fetch(`/api/students/${session.user.id}/grades`);
-        const gradesData = await res.json();
-        
-        // Log the fetched grades data
-        console.log('Fetched Grades Data:', gradesData);
- 
-        // Check if gradesData is an array
-        if (!Array.isArray(gradesData)) {
-          console.error('Expected gradesData to be an array, but got:', gradesData);
-          return; // Exit if gradesData is not an array
-        }
- 
-        setStudents((prevStudents) => 
-          prevStudents.map(student => ({
-            ...student,
-            grade: gradesData.filter(grade => grade.studentId === student._id)
-          }))
+        // Fetch grades for each student
+        const studentsWithGrades = await Promise.all(
+          studentsData.map(async (student: Student) => {
+            const gradesRes = await fetch(`/api/students/${student._id}/grades`);
+            const gradesData = await gradesRes.json();
+            return { ...student, grade: gradesData };
+          })
         );
+
+        setStudents(studentsWithGrades);
+      } catch (error) {
+        console.error('Error fetching students and grades:', error);
       }
     };
 
-    fetchStudents();
-    fetchGrades();
-  }, [session]);
+    fetchStudentsAndGrades();
+  }, []);
 
   const toggleAccordion = (id: string) => {
     setOpenAccordion(openAccordion === id ? null : id);
