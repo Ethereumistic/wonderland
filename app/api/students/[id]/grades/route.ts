@@ -32,7 +32,10 @@ export async function GET(
     console.log('User found:', user);
     console.log('Grades:', user.grade || []);
 
-    return NextResponse.json(user.grade || [], { status: 200 });
+    const grades = Array.isArray(user.grade) ? user.grade : [];
+
+
+    return NextResponse.json(grades, { status: 200 });
   } catch (error) {
     console.error('Error fetching grades:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

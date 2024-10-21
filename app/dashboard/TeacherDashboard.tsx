@@ -36,14 +36,20 @@ export default function TeacherDashboard({ session }: { session: any }) {
   useEffect(() => {
     const fetchStudentsAndGrades = async () => {
       try {
+        console.log('Fetching students...');
         const studentsRes = await fetch('/api/students');
+        console.log('Response status:', studentsRes.status);
+        if (!studentsRes.ok) {
+          throw new Error(`HTTP error! status: ${studentsRes.status}`);
+        }
         const studentsData = await studentsRes.json();
+        console.log('Fetched students data:', JSON.stringify(studentsData, null, 2));
         setStudents(studentsData);
       } catch (error) {
         console.error('Error fetching students:', error);
       }
     };
-
+  
     fetchStudentsAndGrades();
   }, []);
 
@@ -187,8 +193,8 @@ export default function TeacherDashboard({ session }: { session: any }) {
       <div className="flex flex-col items-center mt-32 h-screen">
       <h2>Your Students:</h2>
       <ul className="w-[600px]">
-        {students.map((student: Student) => (
-          <li key={student._id} className="flex flex-col mb-2 items-center">
+      {students.map((student: Student) => (
+        <li key={student._id} className="flex flex-col mb-2 items-center">
             <div onClick={() => toggleAccordion(student._id)} 
             className="flex flex-row items-center 
             w-full justify-between border 
@@ -200,30 +206,28 @@ export default function TeacherDashboard({ session }: { session: any }) {
               <IconPlus onClick={() => openModal(student._id)} className="text-green-500 ml-8 text-3xl" />
             </div>
             {openAccordion === student._id && (
-      <div className="border bg-cyan/[0.1] border-l-cyan border-r-cyan border-b-cyan  py-2 px-4 rounded-b-md w-full mx-auto flex flex-col items-center">
+      <div className="border bg-cyan/[0.1] border-l-cyan border-r-cyan border-b-cyan py-2 px-4 rounded-b-md w-full mx-auto flex flex-col items-center">
         <p className="text-purple text-3xl font-bold">Grades:</p>
         <ul className=" ">
           {student.grade && student.grade.length > 0 ? (
             student.grade.map((gradeObj, index) => (
-                    <li className="flex flex-row items-center w-full justify-between
-                    border-b border-cyan py-2 px-4" key={index}>
-                          <span className="text-cyan text-3xl ">{gradeObj.testTitle || 'No title'}:</span> 
-                          <span className="text-purple font-bold ml-8 text-3xl">{gradeObj.score || 'N/A'}%</span>
-
-                      <span className="flex flex-row ml-12">
-                      <IconEdit onClick={() => openEditModal(student._id, gradeObj)} className="text-cyan ml-8 text-3xl cursor-pointer" />
-                      <IconTrash onClick={() => openDeleteModal(student._id, gradeObj)} className="text-red-500 ml-8 text-3xl cursor-pointer" />
-                      </span>
-                      </li>
+              <li className="flex flex-row items-center w-full justify-between border-b border-cyan py-2 px-4" key={index}>
+                <span className="text-cyan text-3xl ">{gradeObj.testTitle || 'No title'}:</span> 
+                <span className="text-purple font-bold ml-8 text-3xl">{gradeObj.score || 'N/A'}%</span>
+                <span className="flex flex-row ml-12">
+                  <IconEdit onClick={() => openEditModal(student._id, gradeObj)} className="text-cyan ml-8 text-3xl cursor-pointer" />
+                  <IconTrash onClick={() => openDeleteModal(student._id, gradeObj)} className="text-red-500 ml-8 text-3xl cursor-pointer" />
+                </span>
+              </li>
             ))
           ) : (
             <li>No grades available for this student.</li>
           )}
         </ul>
-              </div>
-            )}
-          </li>
-        ))}
+      </div>
+    )}
+  </li>
+))}
       </ul>
       </div>
       <button onClick={() => signOut()}>Sign out</button>
