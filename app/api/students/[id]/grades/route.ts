@@ -20,11 +20,17 @@ export async function GET(
 
     let queryId = session.user.role === 'student' ? session.user.id : id;
 
+    console.log('Fetching grades for user:', queryId);
+
     const user = await db.collection('users').findOne({ _id: new ObjectId(queryId) });
 
     if (!user) {
+      console.log('User not found:', queryId);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    console.log('User found:', user);
+    console.log('Grades:', user.grade || []);
 
     return NextResponse.json(user.grade || [], { status: 200 });
   } catch (error) {

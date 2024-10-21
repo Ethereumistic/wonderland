@@ -200,11 +200,11 @@ export default function TeacherDashboard({ session }: { session: any }) {
               <IconPlus onClick={() => openModal(student._id)} className="text-green-500 ml-8 text-3xl" />
             </div>
             {openAccordion === student._id && (
-              <div className="border bg-cyan/[0.1] border-l-cyan border-r-cyan border-b-cyan  py-2 px-4 rounded-b-md w-full mx-auto flex flex-col items-center">
-                {/* Render student's grades */}
-                <p className="text-purple text-3xl font-bold">Grades:</p>
-                <ul className=" ">
-                  {student.grade && student.grade.map((gradeObj, index) => (
+      <div className="border bg-cyan/[0.1] border-l-cyan border-r-cyan border-b-cyan  py-2 px-4 rounded-b-md w-full mx-auto flex flex-col items-center">
+        <p className="text-purple text-3xl font-bold">Grades:</p>
+        <ul className=" ">
+          {student.grade && student.grade.length > 0 ? (
+            student.grade.map((gradeObj, index) => (
                     <li className="flex flex-row items-center w-full justify-between
                     border-b border-cyan py-2 px-4" key={index}>
                           <span className="text-cyan text-3xl ">{gradeObj.testTitle || 'No title'}:</span> 
@@ -215,9 +215,11 @@ export default function TeacherDashboard({ session }: { session: any }) {
                       <IconTrash onClick={() => openDeleteModal(student._id, gradeObj)} className="text-red-500 ml-8 text-3xl cursor-pointer" />
                       </span>
                       </li>
-                  ))}
-                  
-                </ul>
+            ))
+          ) : (
+            <li>No grades available for this student.</li>
+          )}
+        </ul>
               </div>
             )}
           </li>
