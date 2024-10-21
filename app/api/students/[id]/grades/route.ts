@@ -5,32 +5,32 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../auth/authOptions';
 
 
-//FETCH GRADES
-export async function GET(
+   // FETCH GRADES
+   export async function GET(
     req: NextRequest,
     { params }: { params: { id: string } }
   ) {
     const session = await getServerSession(authOptions);
     console.log('Session:', session); // Debug: Log the session
-  
+ 
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-  
+ 
     const userId = session.user.id;
     console.log('User ID:', userId); // Debug: Log the user ID
-  
+ 
     try {
       const { db } = await connectToDatabase();
       
       // Fetch student data using ObjectId
-      const student = await db.collection('students').findOne({ userId: new ObjectId(userId) });
+      const student = await db.collection('students').findOne({ _id: new ObjectId(params.id) }); // Use params.id to find the student
       console.log('Student found:', student); // Debug: Log the student object
-  
+ 
       if (!student) {
         return NextResponse.json({ error: 'Student not found' }, { status: 404 });
       }
-  
+ 
       return NextResponse.json(student.grade || [], { status: 200 });
     } catch (error) {
       console.error('Error fetching grades:', error);

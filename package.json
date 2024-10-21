@@ -36,7 +36,8 @@
     "react-modal": "^3.16.1",
     "sanity": "^3.40.0",
     "styled-components": "^6.1.13",
-    "tailwind-merge": "^2.5.2"
+    "tailwind-merge": "^2.5.2",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

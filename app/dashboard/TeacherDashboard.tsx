@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { IconEdit, IconPlus, IconTrash, IconX } from '@tabler/icons-react'; // Importing a plus icon
 import Modal from 'react-modal'; // Ensure you have react-modal installed
+import MMenu from '../components/management/mMenu';
 
 interface Grade {
   _id: string;
   testTitle: string;
   score: number;
+  studentId: string;
 }
 
 interface Student {
@@ -38,6 +40,40 @@ export default function TeacherDashboard({ session }: { session: any }) {
     };
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      const res = await fetch('/api/students');
+      const data = await res.json();
+      setStudents(data);
+    };
+
+    const fetchGrades = async () => {
+      if (session?.user?.id) {
+        const res = await fetch(`/api/students/${session.user.id}/grades`);
+        const gradesData = await res.json();
+        
+        // Log the fetched grades data
+        console.log('Fetched Grades Data:', gradesData);
+ 
+        // Check if gradesData is an array
+        if (!Array.isArray(gradesData)) {
+          console.error('Expected gradesData to be an array, but got:', gradesData);
+          return; // Exit if gradesData is not an array
+        }
+ 
+        setStudents((prevStudents) => 
+          prevStudents.map(student => ({
+            ...student,
+            grade: gradesData.filter(grade => grade.studentId === student._id)
+          }))
+        );
+      }
+    };
+
+    fetchStudents();
+    fetchGrades();
+  }, [session]);
 
   const toggleAccordion = (id: string) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -78,23 +114,23 @@ export default function TeacherDashboard({ session }: { session: any }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ grade: { testTitle: newTestTitle, score: Number(newGrade) } }),
+          body: JSON.stringify({ grade: { testTitle: newTestTitle, score: Number(newGrade), studentId: selectedStudentId } }), // Include studentId here
         });
-
+  
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
-
+  
         const result = await response.json();
-
+  
         // Update the local state to reflect the new grade
-        const updatedStudents = students.map((student: Student) => {
+        const updatedStudents: Student[] = students.map((student: Student) => {
           if (student._id === selectedStudentId) {
             return {
               ...student,
               grade: [
                 ...(student.grade || []),
-                { _id: result.gradeId, testTitle: newTestTitle, score: Number(newGrade) }
+                { _id: result.gradeId, testTitle: newTestTitle, score: Number(newGrade), studentId: selectedStudentId } // Include studentId here
               ]
             };
           }
@@ -171,7 +207,9 @@ export default function TeacherDashboard({ session }: { session: any }) {
   
   return (
     <div className="flex flex-col items-center mt-32 h-screen">
-      
+      <div className="my-8">
+      <MMenu />
+      </div>
       <h1>Teacher Dashboard</h1>
       <p>Welcome, {session.user.email}, {session.user.firstName} {session.user.lastName}</p>
       <div className="flex flex-col items-center mt-32 h-screen">

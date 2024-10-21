@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import { Label } from "./label";
 import { Input } from "./input";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,13 @@ export function RegisterForm() {
   });
   const [error, setError] = useState('');
   const router = useRouter();
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const tokenFromUrl = query.get('token'); // Get the token from the URL
+    setToken(tokenFromUrl); // Set the token in state
+  }, []); // Run once on component mount
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,7 +33,7 @@ export function RegisterForm() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, token }), // Include the token
       });
       if (res.ok) {
         router.push('/login');
