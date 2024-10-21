@@ -5,7 +5,6 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../auth/authOptions';
 
 
-// FETCH GRADES
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -14,6 +13,7 @@ export async function GET(
   console.log('Session:', session); // Debug: Log the session
 
   if (!session || !session.user) {
+    console.error('Unauthorized access attempt'); // Log unauthorized access
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,6 +28,7 @@ export async function GET(
     console.log('Student found:', student); // Debug: Log the student object
 
     if (!student) {
+      console.error('Student not found for userId:', userId); // Log if student is not found
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
 
