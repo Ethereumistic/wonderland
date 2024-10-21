@@ -9,11 +9,9 @@ export default function StudentDashboard({ session }: { session: any }) {
   useEffect(() => {
     const fetchGrades = async () => {
       try {
-        // Use the userId here
         const res = await fetch(`/api/students/${session.user.id}/grades`);
         if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || `Error: ${res.statusText}`);
+          throw new Error(`Error: ${res.statusText}`);
         }
         const data = await res.json();
         setGrades(data);
@@ -38,7 +36,7 @@ export default function StudentDashboard({ session }: { session: any }) {
           {grades.length > 0 ? (
             grades.map((grade, index) => (
               <li key={index}>
-                {grade.testTitle}: {grade.score}%
+                {grade.testTitle || 'No title'}: {grade.score || 'N/A'}%
               </li>
             ))
           ) : (

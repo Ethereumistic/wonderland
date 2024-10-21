@@ -44,6 +44,8 @@ export async function POST(req: Request) {
         role: link.role, // Assign the role from the token
         firstName,
         lastName,
+        grade: [],
+        class: '',
         createdAt: new Date(),
         updatedAt: new Date(),
     });

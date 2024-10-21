@@ -18,6 +18,7 @@ interface Student {
   lastName: string;
   grade?: Grade[];
   role?: string;
+  class?: string;
 }
 
 export default function TeacherDashboard({ session }: { session: any }) {
@@ -35,22 +36,11 @@ export default function TeacherDashboard({ session }: { session: any }) {
   useEffect(() => {
     const fetchStudentsAndGrades = async () => {
       try {
-        // Fetch students
         const studentsRes = await fetch('/api/students');
         const studentsData = await studentsRes.json();
-
-        // Fetch grades for each student
-        const studentsWithGrades = await Promise.all(
-          studentsData.map(async (student: Student) => {
-            const gradesRes = await fetch(`/api/students/${student._id}/grades`);
-            const gradesData = await gradesRes.json();
-            return { ...student, grade: gradesData };
-          })
-        );
-
-        setStudents(studentsWithGrades);
+        setStudents(studentsData);
       } catch (error) {
-        console.error('Error fetching students and grades:', error);
+        console.error('Error fetching students:', error);
       }
     };
 
@@ -217,7 +207,8 @@ export default function TeacherDashboard({ session }: { session: any }) {
                   {student.grade && student.grade.map((gradeObj, index) => (
                     <li className="flex flex-row items-center w-full justify-between
                     border-b border-cyan py-2 px-4" key={index}>
-                      <span className="text-cyan text-3xl ">{gradeObj.testTitle}:</span> <span className="text-purple font-bold ml-8 text-3xl">{gradeObj.score}%</span>
+                          <span className="text-cyan text-3xl ">{gradeObj.testTitle || 'No title'}:</span> 
+                          <span className="text-purple font-bold ml-8 text-3xl">{gradeObj.score || 'N/A'}%</span>
 
                       <span className="flex flex-row ml-12">
                       <IconEdit onClick={() => openEditModal(student._id, gradeObj)} className="text-cyan ml-8 text-3xl cursor-pointer" />
