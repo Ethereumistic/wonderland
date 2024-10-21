@@ -14,8 +14,6 @@ import {
 } from "framer-motion";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import { IconContract, IconSpray, IconTie, IconMenu, IconX } from "@tabler/icons-react";
-import { LanguageSelector } from "./LanguageSelector";
-import { useTranslation } from 'next-i18next';
 import { useSession } from 'next-auth/react'; // Import useSession
 
 export function NavbarDemo({ className }: { className?: string }) { // Removed session prop
@@ -108,7 +106,6 @@ function Navbar({
   setMobileMenuOpen: (isOpen: boolean) => void 
 }) {  
   const [active, setActive] = useState<string | null>(null);
-  const { t } = useTranslation();
   const { data: session } = useSession(); // Get session data
 
   return (
@@ -166,7 +163,7 @@ function Navbar({
                                text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"
                   >
 
-                  <MenuItem setActive={setActive} active={active} item={t('Услуги')}>
+                  <MenuItem setActive={setActive} active={active} item='Услуги'>
                   
                     <div className="flex justify-center items-center my-4"><IconSpray width={50} height={50} /><FlipWordsNav /></div>
                       <div className=" text-sm grid grid-cols-4 gap-10 p-4 ">
@@ -207,7 +204,7 @@ function Navbar({
                              px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-5 lg:py-3
                              text-sm sm:text-sm md:text-base lg:text-lg transition-all duration-300"
                 >
-                  <MenuItem setActive={setActive} active={active} item={t('Register')}>
+                  <MenuItem setActive={setActive} active={active} item='Register'>
                     <div className="flex flex-col text-lg px-8 my-10">
                       <div className="flex flex-row  pb-10  justify-center hover:scale-105 transition duration-300 hover:drop-shadow-[0_1.5px_1.5px_rgba(94,187,70,1)]">
                       <IconTie width={30} height={30} className="mr-2" />
@@ -249,7 +246,6 @@ function Navbar({
           )}
 
                 <ThemeSwitch />
-                <LanguageSelector />
               </div>
             )}
           </div>

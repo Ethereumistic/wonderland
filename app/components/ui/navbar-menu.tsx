@@ -3,7 +3,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link, { LinkProps } from "next/link";
 import Image from "next/image";
-import { useTranslation } from 'next-i18next';
 
 const transition = {
   type: "spring",
@@ -179,7 +178,6 @@ export const ProductItem = ({
   darkSrc: string;
 }) => {
 
-  const { t } = useTranslation();
 
   return (
     <Link href={href} className="flex space-x-2   hover:scale-105 transition duration-300 hover:text-lred">
@@ -199,10 +197,10 @@ export const ProductItem = ({
         />
       <div className="">
         <h4 className="text-xl font-bold mb-1 text-black dark:text-white ">
-          {t(title)}
+          {title}
         </h4>
         <p className="text-neutral-700 text-sm max-w-[10rem] dark:text-neutral-300">
-          {t(description)}
+          {description}
         </p>
       </div>
     </Link>

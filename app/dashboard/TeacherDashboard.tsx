@@ -1,29 +1,36 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
-import { IconEdit, IconPlus, IconX } from '@tabler/icons-react'; // Importing a plus icon
+import { IconEdit, IconPlus, IconTrash, IconX } from '@tabler/icons-react'; // Importing a plus icon
 import Modal from 'react-modal'; // Ensure you have react-modal installed
+
+interface Grade {
+  _id: string;
+  testTitle: string;
+  score: number;
+}
 
 interface Student {
   _id: string;
   firstName: string;
   lastName: string;
-  grade?: { testTitle: string; score: number }[]; // Updated to an array of objects
-  role?: string; // Optional role if needed
+  grade?: Grade[];
+  role?: string;
 }
 
 export default function TeacherDashboard({ session }: { session: any }) {
   const [students, setStudents] = useState<Student[]>([]);
-  const [openAccordion, setOpenAccordion] = useState<string | null>(null); // State for accordion
-  const [modalIsOpen, setModalIsOpen] = useState(false); // State for modal
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null); // Track selected student for adding grade
-  const [newGrade, setNewGrade] = useState(''); // State for new grade input
-  const [newTestTitle, setNewTestTitle] = useState(''); // State for new test title input
-  const [editModalIsOpen, setEditModalIsOpen] = useState(false); // State for edit modal
-  const [editingGrade, setEditingGrade] = useState<{ testTitle: string; score: number } | null>(null);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
+  const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
+  const [newGrade, setNewGrade] = useState('');
+  const [newTestTitle, setNewTestTitle] = useState('');
+
 
   useEffect(() => {
-    // Fetch students data
     const fetchStudents = async () => {
       const res = await fetch('/api/students');
       const data = await res.json();
@@ -33,7 +40,7 @@ export default function TeacherDashboard({ session }: { session: any }) {
   }, []);
 
   const toggleAccordion = (id: string) => {
-    setOpenAccordion(openAccordion === id ? null : id); // Toggle accordion
+    setOpenAccordion(openAccordion === id ? null : id);
   };
 
   const openModal = (studentId: string) => {
@@ -43,18 +50,24 @@ export default function TeacherDashboard({ session }: { session: any }) {
 
   const closeModal = () => {
     setModalIsOpen(false);
+    setEditModalIsOpen(false);
+    setDeleteModalIsOpen(false);
     setNewGrade('');
-    setNewTestTitle(''); // Reset test title
+    setNewTestTitle('');
   };
 
-  const openEditModal = (gradeObj: { testTitle: string; score: number }) => {
-    setEditingGrade(gradeObj);
+  const openEditModal = (studentId: string, grade: Grade) => {
+    setSelectedStudentId(studentId);
+    setSelectedGrade(grade);
+    setNewTestTitle(grade.testTitle);
+    setNewGrade(grade.score.toString());
     setEditModalIsOpen(true);
   };
-  
-  const closeEditModal = () => {
-    setEditModalIsOpen(false);
-    setEditingGrade(null); // Reset editing grade
+
+  const openDeleteModal = (studentId: string, grade: Grade) => {
+    setSelectedStudentId(studentId);
+    setSelectedGrade(grade);
+    setDeleteModalIsOpen(true);
   };
 
   const addGrade = async () => {
@@ -65,7 +78,7 @@ export default function TeacherDashboard({ session }: { session: any }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ grade: { testTitle: newTestTitle, score: Number(newGrade) } }), // Send both title and grade
+          body: JSON.stringify({ grade: { testTitle: newTestTitle, score: Number(newGrade) } }),
         });
 
         if (!response.ok) {
@@ -76,10 +89,13 @@ export default function TeacherDashboard({ session }: { session: any }) {
 
         // Update the local state to reflect the new grade
         const updatedStudents = students.map((student: Student) => {
-          if (student._id.toString() === selectedStudentId) {
-            return { 
-              ...student, 
-              grade: [...(student.grade || []), { testTitle: newTestTitle, score: Number(newGrade) }] // Update to new structure
+          if (student._id === selectedStudentId) {
+            return {
+              ...student,
+              grade: [
+                ...(student.grade || []),
+                { _id: result.gradeId, testTitle: newTestTitle, score: Number(newGrade) }
+              ]
             };
           }
           return student;
@@ -93,40 +109,66 @@ export default function TeacherDashboard({ session }: { session: any }) {
   };
 
   const editGrade = async () => {
-    if (selectedStudentId && editingGrade) {
+    if (selectedStudentId && selectedGrade && newGrade && newTestTitle) {
       try {
         const response = await fetch(`/api/students/${selectedStudentId}/grades`, {
-          method: 'PUT', // Use PUT method for updating
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ grade: editingGrade }), // Send updated grade
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gradeId: selectedGrade._id,
+            updatedGrade: { testTitle: newTestTitle, score: Number(newGrade) }
+          }),
         });
-  
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-  
-        // Update the local state to reflect the edited grade
-        const updatedStudents = students.map((student: Student) => {
-          if (student._id.toString() === selectedStudentId) {
-            return { 
-              ...student, 
-              grade: student.grade?.map(g => 
-                g.testTitle === editingGrade.testTitle ? editingGrade : g // Update the specific grade
-              ) 
+
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+
+        setStudents(students.map((student) => {
+          if (student._id === selectedStudentId) {
+            return {
+              ...student,
+              grade: student.grade?.map((g) =>
+                g._id === selectedGrade._id
+                  ? { ...g, testTitle: newTestTitle, score: Number(newGrade) }
+                  : g
+              )
             };
           }
           return student;
-        });
-        setStudents(updatedStudents);
-        closeEditModal();
+        }));
+        closeModal();
       } catch (error) {
         console.error('Failed to edit grade:', error);
       }
     }
   };
+  
+  const deleteGrade = async () => {
+    if (selectedStudentId && selectedGrade) {
+      try {
+        const response = await fetch(`/api/students/${selectedStudentId}/grades`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gradeId: selectedGrade._id }),
+        });
 
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+
+        setStudents(students.map((student) => {
+          if (student._id === selectedStudentId) {
+            return {
+              ...student,
+              grade: student.grade?.filter((g) => g._id !== selectedGrade._id)
+            };
+          }
+          return student;
+        }));
+        closeModal();
+      } catch (error) {
+        console.error('Failed to delete grade:', error);
+      }
+    }
+  };
+  
   return (
     <div className="flex flex-col items-center mt-32 h-screen">
       
@@ -156,9 +198,14 @@ export default function TeacherDashboard({ session }: { session: any }) {
                     <li className="flex flex-row items-center w-full justify-between
                     border-b border-cyan py-2 px-4" key={index}>
                       <span className="text-cyan text-3xl ">{gradeObj.testTitle}:</span> <span className="text-purple font-bold ml-8 text-3xl">{gradeObj.score}%</span>
-                      <IconEdit onClick={() => openEditModal(gradeObj)} className="text-cyan ml-8 text-3xl" />
-                      </li> // Display title and score
+
+                      <span className="flex flex-row ml-12">
+                      <IconEdit onClick={() => openEditModal(student._id, gradeObj)} className="text-cyan ml-8 text-3xl cursor-pointer" />
+                      <IconTrash onClick={() => openDeleteModal(student._id, gradeObj)} className="text-red-500 ml-8 text-3xl cursor-pointer" />
+                      </span>
+                      </li>
                   ))}
+                  
                 </ul>
               </div>
             )}
@@ -214,55 +261,76 @@ export default function TeacherDashboard({ session }: { session: any }) {
   </div>
 </Modal>
 
+      {/* Modal for editing grades */}
+      <Modal
+        isOpen={editModalIsOpen}
+        onRequestClose={closeModal}
+        className="fixed inset-0 flex items-center justify-center z-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+        ariaHideApp={false}
+      >
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 max-w-md w-full">
+          <div className="flex flex-row w-full justify-between">
+            <h2 className="text-2xl font-semibold text-purple-600 mb-4">Edit Grade</h2>
+            <IconX onClick={closeModal} className="text-black text-3xl cursor-pointer" />
+          </div>
+          <input
+            type="text"
+            value={newTestTitle}
+            onChange={(e) => setNewTestTitle(e.target.value)}
+            placeholder="Enter test title"
+            className="w-full mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan"
+          />
+          <input
+            type="number"
+            value={newGrade}
+            onChange={(e) => setNewGrade(e.target.value)}
+            placeholder="Enter grade"
+            className="w-full mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan"
+          />
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={editGrade}
+              className="px-4 py-2 bg-purple text-white rounded-md hover:bg-purple transition-colors"
+            >
+              Update
+            </button>
+            <button
+              onClick={closeModal}
+              className="px-4 py-2 bg-cyan text-white rounded-md hover:bg-cyan transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
 
-{/* EDIT MODAL */}
+{/* Modal for deleting grades */}
 <Modal
-  isOpen={editModalIsOpen}
-  onRequestClose={closeEditModal}
+  isOpen={deleteModalIsOpen}
+  onRequestClose={closeModal}
   className="fixed inset-0 flex items-center justify-center z-50"
-  ariaHideApp={false}
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50"
 >
   <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 max-w-md w-full">
     <div className="flex flex-row w-full justify-between">
-      <h2 className="text-2xl font-semibold text-purple-600 mb-4">Edit Grade</h2>
-      <IconX onClick={closeEditModal} className="text-black text-3xl" />
+      <h2 className="text-2xl font-semibold text-red-600 mb-4">Delete Grade</h2>
+      <IconX onClick={closeModal} className="text-black text-3xl cursor-pointer" />
     </div>
-
-    <input
-      type="text"
-      value={editingGrade?.testTitle || ''}
-      onChange={(e) => setEditingGrade({ 
-        ...editingGrade, 
-        testTitle: e.target.value 
-      } as { testTitle: string; score: number })} // Ensure testTitle is a string
-      placeholder="Enter test title"
-      className="w-full mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan"
-    />
-
-    <input
-      type="number"
-      value={editingGrade?.score || 0} // Default to 0 if score is undefined
-      onChange={(e) => setEditingGrade({ 
-        ...editingGrade, 
-        score: Number(e.target.value) || 0 // Ensure score is a number
-      } as { testTitle: string; score: number })} // Ensure score is a number
-      placeholder="Enter grade"
-      className="w-full mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan"
-    />
-
+    <p className="mb-4">Are you sure you want to delete this grade? This action cannot be undone.</p>
+    <p className="mb-4 font-semibold">
+      {selectedGrade ? `${selectedGrade.testTitle}: ${selectedGrade.score}%` : ''}
+    </p>
     <div className="flex justify-end space-x-4">
       <button
-        onClick={async () => {
-          await editGrade(); // Ensure editGrade is called
-          closeEditModal(); // Close modal after submission
-        }}
-        className="px-4 py-2 bg-purple text-white rounded-md hover:bg-purple transition-colors"
+        onClick={deleteGrade}
+        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
       >
-        Submit
+        Delete
       </button>
       <button
-        onClick={closeEditModal}
-        className="px-4 py-2 bg-cyan text-white rounded-md hover:bg-cyan transition-colors"
+        onClick={closeModal}
+        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
       >
         Cancel
       </button>
